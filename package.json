@@ -14,6 +14,7 @@
     "build:js": "rollup --config",
     "build:types": "tsc --emitDeclarationOnly",
     "build": "npm run clean && npm run build:types && npm run build:js",
+    "test": "jest",
     "lint": "eslint . --ext .ts,.js"
   },
   "repository": {
