@@ -1,6 +1,6 @@
 import { Actor } from "@xapi/xapi";
 
-export interface SCORMProfileConfig {
+export interface SCORMConfig {
   attemptIRI?: string;
   courseIRI: string;
   courseTitle?: string;

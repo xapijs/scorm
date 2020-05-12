@@ -1,6 +1,6 @@
-import { Agent, ResultScore, Verbs, ObjectiveActivityDefinition, InteractionActivityDefinition } from "@xapi/xapi";
-import { SCORMProfile } from "./SCORMProfile";
-import { SCORMProfileConfig } from "./interfaces/SCORMProfileConfig";
+import XAPI, { Agent, ResultScore, ObjectiveActivityDefinition, InteractionActivityDefinition } from "@xapi/xapi";
+import SCORM from "./SCORM";
+import { SCORMConfig } from "./interfaces/SCORMConfig";
 
 const endpoint: string = process.env.LRS_ENDPOINT || "";
 const username: string = process.env.LRS_USERNAME || "";
@@ -13,7 +13,7 @@ const testAgent: Agent = {
   mbox: "mailto:hello@example.com"
 };
 
-const config: SCORMProfileConfig = {
+const config: SCORMConfig = {
   entry: "ab-initio",
   endpoint: endpoint,
   auth: auth,
@@ -22,7 +22,7 @@ const config: SCORMProfileConfig = {
   lessonIRI: "https://github.com/xapijs/scorm"
 };
 
-const scorm: SCORMProfile = new SCORMProfile(config);
+const scorm: SCORM = new SCORM(config);
 
 test("can comment", () => {
   return expect(scorm.comments("Hello World")).resolves.toHaveLength(1);
@@ -360,7 +360,7 @@ test("can report objective", () => {
     },
     type: "http://adlnet.gov/expapi/activities/objective"
   };
-  return expect(scorm.objective("test", Verbs.COMPLETED, definition)).resolves.toHaveLength(1);
+  return expect(scorm.objective("test", XAPI.Verbs.COMPLETED, definition)).resolves.toHaveLength(1);
 });
 
 test("can score", () => {

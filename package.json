@@ -2,9 +2,9 @@
   "name": "@xapi/scorm",
   "version": "0.0.1",
   "description": "A JavaScript library for communicating with an LRS over the xAPI SCORM profile.",
-  "main": "dist/scorm.js",
-  "module": "dist/scorm.esm.js",
-  "typings": "dist/types/index.d.ts",
+  "main": "dist/SCORM.js",
+  "module": "dist/SCORM.esm.js",
+  "typings": "dist/types/SCORM.d.ts",
   "files": [
     "dist/**/*"
   ],
@@ -56,7 +56,7 @@
     "typescript": "^3.7.5"
   },
   "dependencies": {
-    "@xapi/xapi": "git+https://github.com/xapijs/xapi.git#split",
+    "@xapi/xapi": "file:../xapi",
     "crypto-js": "^4.0.0"
   }
 }
