@@ -1,4 +1,4 @@
-import { Actor } from "@xapi/xapi";
+import { Agent } from "@xapi/xapi";
 
 export interface SCORMConfig {
   attemptIRI?: string;
@@ -11,5 +11,5 @@ export interface SCORMConfig {
   lessonTitle?: string;
   lessonDescription?: string;
   entry?: "ab-initio" | "resume";
-  actor: Actor;
+  actor: Agent;
 }

@@ -57,6 +57,7 @@
   },
   "dependencies": {
     "@xapi/xapi": "file:../xapi",
-    "crypto-js": "^4.0.0"
+    "crypto-js": "^4.0.0",
+    "uuidv4": "^6.0.8"
   }
 }

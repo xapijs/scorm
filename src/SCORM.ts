@@ -11,8 +11,8 @@ import XAPI, {
   InteractionActivity,
   InteractionActivityDefinition
 } from "@xapi/xapi";
-import { SCORMConfig } from "./interfaces/SCORMConfig";
-// import { uuidv4 } from "./helpers/uuidv4";
+import { SCORMConfig, SCORMAttemptState, SCORMAgentProfile, SCORMActivityState } from "./interfaces";
+import { uuid } from "uuidv4";
 
 /**
  * Experience API SCORM Profile
@@ -36,24 +36,11 @@ export default class SCORM {
     if (this.config === undefined) {
       throw Error("Unable to construct, no xAPI configuration found in the URL and fallback configuration not provided.");
     }
-    // TODO: Attempt IRIs
-    // Get attempts array
-      // If array exists
-        // if IRI does not exist in array already
-          // add IRI on to existing array
-          // Put array to activity state document
-      // If array does not exist
-        // create new array with IRI in
-        // Post array to activity state document
-
-    // if (!config.attemptIRI) {
-    //   config.attemptIRI = uuidv4();
-    // }
     this.connection = new XAPI(
       this.config.endpoint || "",
       this.config.auth || ""
     );
-    // Auto-initialise/resume
+    // Auto-initialise/resume if entry method specified
     if (this.config.entry === "ab-initio") {
       this.abInitio();
     } else if (this.config.entry === "resume") {
@@ -63,6 +50,39 @@ export default class SCORM {
 
   public getConfig(): SCORMConfig {
     return this.config;
+  }
+
+  public getCurrentAttemptState(): Promise<SCORMAttemptState> {
+    if (!this.config.attemptIRI) {
+      return Promise.reject("No attempt IRI found, try initializing a new attempt or resuming the latest attempt first.");
+    }
+    return this.connection.getState(
+      this.config.actor,
+      this.config.attemptIRI,
+      "https://w3id.org/xapi/scorm/attempt-state"
+    ) as Promise<SCORMAttemptState>;
+  }
+
+  public setCurrentAttemptState(currentAttemptState: SCORMAttemptState): Promise<void> {
+    if (!this.config.attemptIRI) {
+      return Promise.reject("No attempt IRI found, try initializing a new attempt or resuming the latest attempt first.");
+    }
+    return this.getCurrentAttemptState().then((attemptState: SCORMAttemptState) => {
+      const updatedAttemptState = {
+        ...attemptState,
+        ...currentAttemptState
+      };
+      return this.createAttemptState(updatedAttemptState);
+    }, () => {
+      return this.setAttemptState(currentAttemptState);
+    });
+  }
+
+  public getAgentProfile(): Promise<SCORMAgentProfile> {
+    return this.connection.getAgentProfile(
+      this.config.actor,
+      "https://w3id.org/xapi/scorm/agent-profile"
+    ) as Promise<SCORMAgentProfile>;
   }
 
   // https://adl.gitbooks.io/scorm-profile-xapi/content/xapi-scorm-profile.html#comments-from-learner
@@ -84,14 +104,18 @@ export default class SCORM {
 
   // https://adl.gitbooks.io/scorm-profile-xapi/content/xapi-scorm-profile.html#entry
   public abInitio(): Promise<string[]> {
-    return this.request({
-      verb: XAPI.Verbs.INITIALIZED
+    return this.createAttempt().then(() => {
+      return this.request({
+        verb: XAPI.Verbs.INITIALIZED
+      });
     });
   }
 
   public resume(): Promise<string[]> {
-    return this.request({
-      verb: XAPI.Verbs.RESUMED
+    return this.getLatestAttempt().then(() => {
+      return this.request({
+        verb: XAPI.Verbs.RESUMED
+      });
     });
   }
 
@@ -169,6 +193,66 @@ export default class SCORM {
     return this.request({
       verb: XAPI.Verbs.FAILED
     });
+  }
+
+  private getSCORMActivityState(): Promise<SCORMActivityState> {
+    return this.connection.getState(
+      this.config.actor,
+      this.config.lessonIRI,
+      "https://w3id.org/xapi/scorm/activity-state"
+    ) as Promise<SCORMActivityState>;
+  }
+
+  private setSCORMActivityState(activityState: SCORMActivityState): Promise<void> {
+    return this.connection.createState(
+      this.config.actor,
+      this.config.lessonIRI,
+      "https://w3id.org/xapi/scorm/activity-state",
+      activityState
+    );
+  }
+
+  private createAttempt(): Promise<void> {
+    // Generate the activity attempt IRI
+    this.config.attemptIRI = `${this.config.lessonIRI}/attempt/${uuid()}`;
+    // Add the attempt IRI to the `attempts` array
+    return this.getSCORMActivityState().then((activityState: SCORMActivityState) => {
+      activityState.attempts.push(this.config.attemptIRI);
+      return this.setSCORMActivityState(activityState);
+    }, () => {
+      const activityState: SCORMActivityState = {
+        attempts: [this.config.attemptIRI]
+      };
+      return this.setSCORMActivityState(activityState);
+    });
+  }
+
+  private getLatestAttempt(): Promise<void> {
+    return this.getSCORMActivityState().then((activityState: SCORMActivityState) => {
+      if (!activityState.attempts?.length) {
+        return Promise.reject("Cannot resume, no attempts found.");
+      }
+      const latestAttemptIRI: string = activityState.attempts[activityState.attempts.length - 1];
+      this.config.attemptIRI = latestAttemptIRI;
+    });
+  }
+
+  private createAttemptState(attemptState: SCORMAttemptState): Promise<void> {
+    return this.connection.createState(
+      this.config.actor,
+      this.config.attemptIRI,
+      "https://w3id.org/xapi/scorm/attempt-state",
+      attemptState
+    );
+  }
+
+  private setAttemptState(attemptState: any): Promise<void> {
+    return this.connection.setState(
+      this.config.actor,
+      this.config.attemptIRI,
+      "https://w3id.org/xapi/scorm/attempt-state",
+      attemptState
+    );
   }
 
   private get statementObject(): Activity | undefined {
@@ -277,6 +361,9 @@ export default class SCORM {
   }
 
   private request(statement: Partial<Statement>): Promise<string[]> {
+    if (!this.config.attemptIRI) {
+      return Promise.reject("No attempt IRI found, try initializing a new attempt or resuming the latest attempt first.");
+    }
     const combinedStatement: Partial<Statement> = {
       actor: this.config.actor,
       object: this.statementObject,
