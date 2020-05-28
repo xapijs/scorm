@@ -56,7 +56,7 @@
     "typescript": "^3.7.5"
   },
   "dependencies": {
-    "@xapi/xapi": "file:../xapi",
+    "@xapi/xapi": "^0.2.0",
     "crypto-js": "^4.0.0",
     "uuidv4": "^6.0.8"
   }
