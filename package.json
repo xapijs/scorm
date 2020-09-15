@@ -1,7 +1,7 @@
 {
   "name": "@xapi/scorm",
   "version": "0.1.0",
-  "description": "A JavaScript library for communicating with an LRS over the xAPI SCORM profile.",
+  "description": "Communicate over the xAPI SCORM profile using JavaScript.",
   "main": "dist/SCORM.cjs.js",
   "module": "dist/SCORM.esm.js",
   "browser": "dist/SCORM.umd.js",
