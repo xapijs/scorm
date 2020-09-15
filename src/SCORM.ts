@@ -13,6 +13,7 @@ import XAPI, {
 } from "@xapi/xapi";
 import { SCORMConfig, SCORMAttemptState, SCORMAgentProfile, SCORMActivityState } from "./interfaces";
 import { uuid } from "uuidv4";
+import { AxiosPromise } from "axios";
 
 /**
  * Experience API SCORM Profile
@@ -52,7 +53,7 @@ export default class SCORM {
     return this.config;
   }
 
-  public getCurrentAttemptState(): Promise<SCORMAttemptState> {
+  public getCurrentAttemptState(): AxiosPromise<SCORMAttemptState> {
     if (!this.config.attemptIRI) {
       return Promise.reject("No attempt IRI found, try initializing a new attempt or resuming the latest attempt first.");
     }
@@ -60,14 +61,15 @@ export default class SCORM {
       this.config.actor,
       this.config.attemptIRI,
       "https://w3id.org/xapi/scorm/attempt-state"
-    ) as Promise<SCORMAttemptState>;
+    ) as AxiosPromise<SCORMAttemptState>;
   }
 
-  public setCurrentAttemptState(currentAttemptState: SCORMAttemptState): Promise<void> {
+  public setCurrentAttemptState(currentAttemptState: SCORMAttemptState): AxiosPromise<void> {
     if (!this.config.attemptIRI) {
       return Promise.reject("No attempt IRI found, try initializing a new attempt or resuming the latest attempt first.");
     }
-    return this.getCurrentAttemptState().then((attemptState: SCORMAttemptState) => {
+    return this.getCurrentAttemptState().then((result) => {
+      const attemptState: SCORMAttemptState = result.data;
       const updatedAttemptState = {
         ...attemptState,
         ...currentAttemptState
@@ -78,15 +80,15 @@ export default class SCORM {
     });
   }
 
-  public getAgentProfile(): Promise<SCORMAgentProfile> {
+  public getAgentProfile(): AxiosPromise<SCORMAgentProfile> {
     return this.connection.getAgentProfile(
       this.config.actor,
       "https://w3id.org/xapi/scorm/agent-profile"
-    ) as Promise<SCORMAgentProfile>;
+    ) as AxiosPromise<SCORMAgentProfile>;
   }
 
   // https://adl.gitbooks.io/scorm-profile-xapi/content/xapi-scorm-profile.html#comments-from-learner
-  public comments(comments: string): Promise<string[]> {
+  public comments(comments: string): AxiosPromise<string[]> {
     return this.request({
       verb: XAPI.Verbs.COMMENTED,
       result: {
@@ -96,14 +98,14 @@ export default class SCORM {
   }
 
   // https://adl.gitbooks.io/scorm-profile-xapi/content/xapi-scorm-profile.html#scorm-activity-profile-comment-object
-  public complete(): Promise<string[]> {
+  public complete(): AxiosPromise<string[]> {
     return this.request({
       verb: XAPI.Verbs.COMPLETED
     });
   }
 
   // https://adl.gitbooks.io/scorm-profile-xapi/content/xapi-scorm-profile.html#entry
-  public abInitio(): Promise<string[]> {
+  public abInitio(): AxiosPromise<string[]> {
     return this.createAttempt().then(() => {
       return this.request({
         verb: XAPI.Verbs.INITIALIZED
@@ -111,7 +113,7 @@ export default class SCORM {
     });
   }
 
-  public resume(): Promise<string[]> {
+  public resume(): AxiosPromise<string[]> {
     return this.getLatestAttempt().then(() => {
       return this.request({
         verb: XAPI.Verbs.RESUMED
@@ -120,7 +122,7 @@ export default class SCORM {
   }
 
   // https://adl.gitbooks.io/scorm-profile-xapi/content/xapi-scorm-profile.html#exit
-  public exit(duration?: string, successStatus?: boolean, completionStatus?: boolean, score?: ResultScore): Promise<string[]> {
+  public exit(duration?: string, successStatus?: boolean, completionStatus?: boolean, score?: ResultScore): AxiosPromise<string[]> {
     const result: Result = {
       ...(duration ? {duration: duration} : {}),
       ...(typeof successStatus === "boolean" ? {success: successStatus} : {}),
@@ -133,7 +135,7 @@ export default class SCORM {
     });
   }
 
-  public suspend(duration?: string): Promise<string[]> {
+  public suspend(duration?: string): AxiosPromise<string[]> {
     const result: Result = {
       ...(duration ? {duration: duration} : {})
     };
@@ -144,7 +146,7 @@ export default class SCORM {
   }
 
   // https://adl.gitbooks.io/scorm-profile-xapi/content/xapi-scorm-profile.html#interactions
-  public interaction(interactionId: number, response: string, definition: InteractionActivityDefinition, id?: string): Promise<string[]> {
+  public interaction(interactionId: number, response: string, definition: InteractionActivityDefinition, id?: string): AxiosPromise<string[]> {
     const interactionActivity: InteractionActivity = {
       objectType: "Activity",
       id: id || `${this.config.courseIRI}/${this.config.lessonIRI}/interaction/${interactionId}`,
@@ -160,7 +162,7 @@ export default class SCORM {
   }
 
   // https://adl.gitbooks.io/scorm-profile-xapi/content/xapi-scorm-profile.html#objectives
-  public objective(objectiveId: string, verb: Verb, definition: ObjectiveActivityDefinition, id?: string): Promise<string[]> {
+  public objective(objectiveId: string, verb: Verb, definition: ObjectiveActivityDefinition, id?: string): AxiosPromise<string[]> {
     const objectiveActivity: ObjectiveActivity = {
       objectType: "Activity",
       id: id || `${this.config.courseIRI}/${this.config.lessonIRI}/objective/${objectiveId}`,
@@ -173,7 +175,7 @@ export default class SCORM {
   }
 
   // https://adl.gitbooks.io/scorm-profile-xapi/content/xapi-scorm-profile.html#score
-  public score(score: ResultScore): Promise<string[]> {
+  public score(score: ResultScore): AxiosPromise<string[]> {
     return this.request({
       verb: XAPI.Verbs.SCORED,
       result: {
@@ -183,27 +185,27 @@ export default class SCORM {
   }
 
   // https://adl.gitbooks.io/scorm-profile-xapi/content/xapi-scorm-profile.html#success-status
-  public pass(): Promise<string[]> {
+  public pass(): AxiosPromise<string[]> {
     return this.request({
       verb: XAPI.Verbs.PASSED
     });
   }
 
-  public fail(): Promise<string[]> {
+  public fail(): AxiosPromise<string[]> {
     return this.request({
       verb: XAPI.Verbs.FAILED
     });
   }
 
-  private getSCORMActivityState(): Promise<SCORMActivityState> {
+  private getSCORMActivityState(): AxiosPromise<SCORMActivityState> {
     return this.connection.getState(
       this.config.actor,
       this.config.lessonIRI,
       "https://w3id.org/xapi/scorm/activity-state"
-    ) as Promise<SCORMActivityState>;
+    );
   }
 
-  private setSCORMActivityState(activityState: SCORMActivityState): Promise<void> {
+  private setSCORMActivityState(activityState: SCORMActivityState): AxiosPromise<void> {
     return this.connection.createState(
       this.config.actor,
       this.config.lessonIRI,
@@ -212,11 +214,12 @@ export default class SCORM {
     );
   }
 
-  private createAttempt(): Promise<void> {
+  private createAttempt(): AxiosPromise<void> {
     // Generate the activity attempt IRI
     this.config.attemptIRI = `${this.config.lessonIRI}/attempt/${uuid()}`;
     // Add the attempt IRI to the `attempts` array
-    return this.getSCORMActivityState().then((activityState: SCORMActivityState) => {
+    return this.getSCORMActivityState().then((result) => {
+      const activityState: SCORMActivityState = result.data;
       activityState.attempts.push(this.config.attemptIRI);
       return this.setSCORMActivityState(activityState);
     }, () => {
@@ -228,7 +231,8 @@ export default class SCORM {
   }
 
   private getLatestAttempt(): Promise<void> {
-    return this.getSCORMActivityState().then((activityState: SCORMActivityState) => {
+    return this.getSCORMActivityState().then((result) => {
+      const activityState: SCORMActivityState = result.data;
       if (!activityState.attempts?.length) {
         return Promise.reject("Cannot resume, no attempts found.");
       }
@@ -237,7 +241,7 @@ export default class SCORM {
     });
   }
 
-  private createAttemptState(attemptState: SCORMAttemptState): Promise<void> {
+  private createAttemptState(attemptState: SCORMAttemptState): AxiosPromise<void> {
     return this.connection.createState(
       this.config.actor,
       this.config.attemptIRI,
@@ -246,7 +250,7 @@ export default class SCORM {
     );
   }
 
-  private setAttemptState(attemptState: any): Promise<void> {
+  private setAttemptState(attemptState: any): AxiosPromise<void> {
     return this.connection.setState(
       this.config.actor,
       this.config.attemptIRI,
@@ -360,7 +364,7 @@ export default class SCORM {
     return grouping;
   }
 
-  private request(statement: Partial<Statement>): Promise<string[]> {
+  private request(statement: Partial<Statement>): AxiosPromise<string[]> {
     if (!this.config.attemptIRI) {
       return Promise.reject("No attempt IRI found, try initializing a new attempt or resuming the latest attempt first.");
     }

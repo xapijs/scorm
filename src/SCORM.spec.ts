@@ -26,55 +26,79 @@ const scorm: SCORM = new SCORM(config);
 
 describe("scorm temporal model", () => {
   test("can initialise", () => {
-    return expect(scorm.abInitio()).resolves.toHaveLength(1);
+    return scorm.abInitio().then((result) => {
+      return expect(result.data).toHaveLength(1);
+    });
   });
 
   test("can comment", () => {
-    return expect(scorm.comments("Hello World")).resolves.toHaveLength(1);
+    return scorm.comments("Hello World").then((result) => {
+      return expect(result.data).toHaveLength(1);
+    });
   });
 
   test("can complete", () => {
-    return expect(scorm.complete()).resolves.toHaveLength(1);
+    return scorm.complete().then((result) => {
+      return expect(result.data).toHaveLength(1);
+    });
   });
 
   test("can resume", () => {
-    return expect(scorm.resume()).resolves.toHaveLength(1);
+    return scorm.resume().then((result) => {
+      return expect(result.data).toHaveLength(1);
+    });
   });
 
   test("can exit", () => {
-    return expect(scorm.exit()).resolves.toHaveLength(1);
+    return scorm.exit().then((result) => {
+      return expect(result.data).toHaveLength(1);
+    });
   });
 
   test("can exit with duration", () => {
-    return expect(scorm.exit("PT1H30M15S")).resolves.toHaveLength(1);
+    return scorm.exit("PT1H30M15S").then((result) => {
+      return expect(result.data).toHaveLength(1);
+    });
   });
 
   test("can exit with success", () => {
-    return expect(scorm.exit(undefined, true)).resolves.toHaveLength(1);
+    return scorm.exit(undefined, true).then((result) => {
+      return expect(result.data).toHaveLength(1);
+    });
   });
 
   test("can exit with completion", () => {
-    return expect(scorm.exit(undefined, undefined, true)).resolves.toHaveLength(1);
+    return scorm.exit(undefined, undefined, true).then((result) => {
+      return expect(result.data).toHaveLength(1);
+    });
   });
 
   test("can exit with score", () => {
-    return expect(scorm.exit(undefined, undefined, undefined, {
+    return scorm.exit(undefined, undefined, undefined, {
       scaled: 1
-    })).resolves.toHaveLength(1);
+    }).then((result) => {
+      return expect(result.data).toHaveLength(1);
+    });
   });
 
   test("can exit with duration, success, completion and score", () => {
-    return expect(scorm.exit("PT1H30M15S", true, true, {
+    return scorm.exit("PT1H30M15S", true, true, {
       scaled: 1
-    })).resolves.toHaveLength(1);
+    }).then((result) => {
+      return expect(result.data).toHaveLength(1);
+    });
   });
 
   test("can suspend", () => {
-    return expect(scorm.suspend()).resolves.toHaveLength(1);
+    return scorm.suspend().then((result) => {
+      return expect(result.data).toHaveLength(1);
+    });
   });
 
   test("can suspend with duration", () => {
-    return expect(scorm.suspend("PT1H30M15S")).resolves.toHaveLength(1);
+    return scorm.suspend("PT1H30M15S").then((result) => {
+      return expect(result.data).toHaveLength(1);
+    });
   });
 
   test("can report true/false interaction", () => {
@@ -87,7 +111,9 @@ describe("scorm temporal model", () => {
       interactionType: "true-false",
       correctResponsesPattern: ["true"]
     };
-    return expect(scorm.interaction(1, answer, definition)).resolves.toHaveLength(1);
+    return scorm.interaction(1, answer, definition).then((result) => {
+      return expect(result.data).toHaveLength(1);
+    });
   });
 
   test("can report choice interaction", () => {
@@ -128,7 +154,9 @@ describe("scorm temporal model", () => {
         }
       ]
     };
-    return expect(scorm.interaction(2, answer, definition)).resolves.toHaveLength(1);
+    return scorm.interaction(2, answer, definition).then((result) => {
+      return expect(result.data).toHaveLength(1);
+    });
   });
 
   test("can report fill-in interaction", () => {
@@ -143,7 +171,9 @@ describe("scorm temporal model", () => {
         "World"
       ]
     };
-    return expect(scorm.interaction(3, answer, definition)).resolves.toHaveLength(1);
+    return scorm.interaction(3, answer, definition).then((result) => {
+      return expect(result.data).toHaveLength(1);
+    });
   });
 
   test("can report long-fill-in interaction", () => {
@@ -158,7 +188,9 @@ describe("scorm temporal model", () => {
         "{case_matters=false}{lang=en}World"
       ]
     };
-    return expect(scorm.interaction(4, answer, definition)).resolves.toHaveLength(1);
+    return scorm.interaction(4, answer, definition).then((result) => {
+      return expect(result.data).toHaveLength(1);
+    });
   });
 
   test("can report likert interaction", () => {
@@ -205,7 +237,9 @@ describe("scorm temporal model", () => {
         }
       ]
     };
-    return expect(scorm.interaction(5, answer, definition)).resolves.toHaveLength(1);
+    return scorm.interaction(5, answer, definition).then((result) => {
+      return expect(result.data).toHaveLength(1);
+    });
   });
 
   test("can report matching interaction", () => {
@@ -248,7 +282,9 @@ describe("scorm temporal model", () => {
         }
       ]
     };
-    return expect(scorm.interaction(6, answer, definition)).resolves.toHaveLength(1);
+    return scorm.interaction(6, answer, definition).then((result) => {
+      return expect(result.data).toHaveLength(1);
+    });
   });
 
   test("can report performance interaction", () => {
@@ -277,7 +313,9 @@ describe("scorm temporal model", () => {
         }
       ]
     };
-    return expect(scorm.interaction(7, answer, definition)).resolves.toHaveLength(1);
+    return scorm.interaction(7, answer, definition).then((result) => {
+      return expect(result.data).toHaveLength(1);
+    });
   });
 
   test("can report sequencing interaction", () => {
@@ -318,7 +356,9 @@ describe("scorm temporal model", () => {
         }
       ]
     };
-    return expect(scorm.interaction(8, answer, definition)).resolves.toHaveLength(1);
+    return scorm.interaction(8, answer, definition).then((result) => {
+      return expect(result.data).toHaveLength(1);
+    });
   });
 
   test("can report numeric interaction", () => {
@@ -333,7 +373,9 @@ describe("scorm temporal model", () => {
         "2"
       ]
     };
-    return expect(scorm.interaction(9, answer, definition)).resolves.toHaveLength(1);
+    return scorm.interaction(9, answer, definition).then((result) => {
+      return expect(result.data).toHaveLength(1);
+    });
   });
 
   test("can report other interaction", () => {
@@ -348,7 +390,9 @@ describe("scorm temporal model", () => {
         "(35.937432,-86.868896)"
       ]
     };
-    return expect(scorm.interaction(10, answer, definition)).resolves.toHaveLength(1);
+    return scorm.interaction(10, answer, definition).then((result) => {
+      return expect(result.data).toHaveLength(1);
+    });
   });
 
   test("can report objective", () => {
@@ -361,29 +405,37 @@ describe("scorm temporal model", () => {
       },
       type: "http://adlnet.gov/expapi/activities/objective"
     };
-    return expect(scorm.objective("test", XAPI.Verbs.COMPLETED, definition)).resolves.toHaveLength(1);
+    return scorm.objective("test", XAPI.Verbs.COMPLETED, definition).then((result) => {
+      return expect(result.data).toHaveLength(1);
+    });
   });
 
   test("can score", () => {
     const score: ResultScore = {
       scaled: 1
     };
-    return expect(scorm.score(score)).resolves.toHaveLength(1);
+    return scorm.score(score).then((result) => {
+      return expect(result.data).toHaveLength(1);
+    });
   });
 
   test("can pass", () => {
-    return expect(scorm.pass()).resolves.toHaveLength(1);
+    return scorm.pass().then((result) => {
+      return expect(result.data).toHaveLength(1);
+    });
   });
 
   test("can fail", () => {
-    return expect(scorm.fail()).resolves.toHaveLength(1);
+    return scorm.fail().then((result) => {
+      return expect(result.data).toHaveLength(1);
+    });
   });
 });
 
 describe("attempt state", () => {
   test("can update the current attempt state", () => {
     /* eslint-disable */
-    return expect(scorm.setCurrentAttemptState({
+    return scorm.setCurrentAttemptState({
       adl_data: [],
       comments_from_lms: {
         comment: "",
@@ -400,13 +452,15 @@ describe("attempt state", () => {
         language: ""
       },
       total_time: ""
-    })).resolves.toBeDefined();
+    }).then((result) => {
+      return expect(result.data).toBeDefined();
+    });
     /* eslint-enable */
   });
 
   test("can get the current attempt state", () => {
-    return scorm.getCurrentAttemptState().then((state) => {
-      expect(state).toBeDefined();
+    return scorm.getCurrentAttemptState().then((result) => {
+      expect(result.data).toBeDefined();
     });
   });
 
