@@ -2,8 +2,9 @@
   "name": "@xapi/scorm",
   "version": "0.0.1",
   "description": "A JavaScript library for communicating with an LRS over the xAPI SCORM profile.",
-  "main": "dist/SCORM.js",
+  "main": "dist/SCORM.cjs.js",
   "module": "dist/SCORM.esm.js",
+  "browser": "dist/SCORM.umd.js",
   "typings": "dist/types/SCORM.d.ts",
   "files": [
     "dist/**/*"
@@ -39,6 +40,7 @@
     "@babel/preset-typescript": "^7.9.0",
     "@rollup/plugin-babel": "^5.0.0",
     "@rollup/plugin-commonjs": "^11.1.0",
+    "@rollup/plugin-json": "^4.1.0",
     "@rollup/plugin-node-resolve": "^7.1.3",
     "@types/jest": "^25.1.4",
     "@types/node": "^13.11.1",
@@ -51,6 +53,7 @@
     "jest": "^25.2.4",
     "rimraf": "^3.0.2",
     "rollup": "^2.7.5",
+    "rollup-plugin-terser": "^7.0.2",
     "ts-jest": "^25.3.0",
     "typescript": "^3.7.5"
   },
