@@ -4,4 +4,4 @@
 
 Communicate over the xAPI SCORM profile using JavaScript.
 
-[Documentation](https://cookiecookson.gitbook.io/xapijs/scorm-profile-library/getting-started)
+[Documentation](https://www.xapijs.dev/scorm-profile-library/getting-started)
