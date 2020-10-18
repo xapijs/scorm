@@ -1,4 +1,9 @@
-import XAPI, { Agent, ResultScore, ObjectiveActivityDefinition, InteractionActivityDefinition } from "@xapi/xapi";
+import XAPI, {
+  Agent,
+  ResultScore,
+  ObjectiveActivityDefinition,
+  InteractionActivityDefinition,
+} from "@xapi/xapi";
 import SCORM from "./SCORM";
 import { SCORMConfig } from "./interfaces/SCORMConfig";
 
@@ -10,7 +15,7 @@ const auth: string = `Basic ${btoa(username + ":" + password)}`;
 const testAgent: Agent = {
   objectType: "Agent",
   name: "Jest",
-  mbox: "mailto:hello@example.com"
+  mbox: "mailto:hello@example.com",
 };
 
 const config: SCORMConfig = {
@@ -19,7 +24,7 @@ const config: SCORMConfig = {
   auth: auth,
   actor: testAgent,
   courseIRI: "https://github.com/xapijs",
-  lessonIRI: "https://github.com/xapijs/scorm"
+  lessonIRI: "https://github.com/xapijs/scorm",
 };
 
 const scorm: SCORM = new SCORM(config);
@@ -74,19 +79,23 @@ describe("scorm temporal model", () => {
   });
 
   test("can exit with score", () => {
-    return scorm.exit(undefined, undefined, undefined, {
-      scaled: 1
-    }).then((result) => {
-      return expect(result.data).toHaveLength(1);
-    });
+    return scorm
+      .exit(undefined, undefined, undefined, {
+        scaled: 1,
+      })
+      .then((result) => {
+        return expect(result.data).toHaveLength(1);
+      });
   });
 
   test("can exit with duration, success, completion and score", () => {
-    return scorm.exit("PT1H30M15S", true, true, {
-      scaled: 1
-    }).then((result) => {
-      return expect(result.data).toHaveLength(1);
-    });
+    return scorm
+      .exit("PT1H30M15S", true, true, {
+        scaled: 1,
+      })
+      .then((result) => {
+        return expect(result.data).toHaveLength(1);
+      });
   });
 
   test("can suspend", () => {
@@ -105,11 +114,11 @@ describe("scorm temporal model", () => {
     const answer: string = "true";
     const definition: InteractionActivityDefinition = {
       description: {
-        "en-US": "What is true?"
+        "en-US": "What is true?",
       },
       type: "http://adlnet.gov/expapi/activities/cmi.interaction",
       interactionType: "true-false",
-      correctResponsesPattern: ["true"]
+      correctResponsesPattern: ["true"],
     };
     return scorm.interaction(1, answer, definition).then((result) => {
       return expect(result.data).toHaveLength(1);
@@ -120,39 +129,37 @@ describe("scorm temporal model", () => {
     const answer: string = "choice1[,]choice2";
     const definition: InteractionActivityDefinition = {
       description: {
-        "en-US": "What are the first two choices?"
+        "en-US": "What are the first two choices?",
       },
       type: "http://adlnet.gov/expapi/activities/cmi.interaction",
       interactionType: "choice",
-      correctResponsesPattern: [
-        "choice1[,]choice2"
-      ],
+      correctResponsesPattern: ["choice1[,]choice2"],
       choices: [
         {
           id: "choice1",
           description: {
-            "en-US": "Choice 1"
-          }
+            "en-US": "Choice 1",
+          },
         },
         {
           id: "choice2",
           description: {
-            "en-US": "Choice 2"
-          }
+            "en-US": "Choice 2",
+          },
         },
         {
           id: "choice3",
           description: {
-            "en-US": "Choice 3"
-          }
+            "en-US": "Choice 3",
+          },
         },
         {
           id: "choice4",
           description: {
-            "en-US": "Choice 4"
-          }
-        }
-      ]
+            "en-US": "Choice 4",
+          },
+        },
+      ],
     };
     return scorm.interaction(2, answer, definition).then((result) => {
       return expect(result.data).toHaveLength(1);
@@ -163,13 +170,11 @@ describe("scorm temporal model", () => {
     const answer: string = "World";
     const definition: InteractionActivityDefinition = {
       description: {
-        "en-US": "Hello?"
+        "en-US": "Hello?",
       },
       type: "http://adlnet.gov/expapi/activities/cmi.interaction",
       interactionType: "fill-in",
-      correctResponsesPattern: [
-        "World"
-      ]
+      correctResponsesPattern: ["World"],
     };
     return scorm.interaction(3, answer, definition).then((result) => {
       return expect(result.data).toHaveLength(1);
@@ -180,13 +185,11 @@ describe("scorm temporal model", () => {
     const answer: string = "World";
     const definition: InteractionActivityDefinition = {
       description: {
-        "en-US": "Hello?"
+        "en-US": "Hello?",
       },
       type: "http://adlnet.gov/expapi/activities/cmi.interaction",
       interactionType: "long-fill-in",
-      correctResponsesPattern: [
-        "{case_matters=false}{lang=en}World"
-      ]
+      correctResponsesPattern: ["{case_matters=false}{lang=en}World"],
     };
     return scorm.interaction(4, answer, definition).then((result) => {
       return expect(result.data).toHaveLength(1);
@@ -197,45 +200,43 @@ describe("scorm temporal model", () => {
     const answer: string = "likert_4";
     const definition: InteractionActivityDefinition = {
       description: {
-        "en-US": "What is the highest value on this likert?"
+        "en-US": "What is the highest value on this likert?",
       },
       type: "http://adlnet.gov/expapi/activities/cmi.interaction",
       interactionType: "likert",
-      correctResponsesPattern: [
-        "likert_4"
-      ],
+      correctResponsesPattern: ["likert_4"],
       scale: [
         {
           id: "likert_0",
           description: {
-            "en-US": "Very Unsatisfied"
-          }
+            "en-US": "Very Unsatisfied",
+          },
         },
         {
           id: "likert_1",
           description: {
-            "en-US": "Unsatisfied"
-          }
+            "en-US": "Unsatisfied",
+          },
         },
         {
           id: "likert_2",
           description: {
-            "en-US": "Neutral"
-          }
+            "en-US": "Neutral",
+          },
         },
         {
           id: "likert_3",
           description: {
-            "en-US": "Satisfied"
-          }
+            "en-US": "Satisfied",
+          },
         },
         {
           id: "likert_4",
           description: {
-            "en-US": "Very Satisfied"
-          }
-        }
-      ]
+            "en-US": "Very Satisfied",
+          },
+        },
+      ],
     };
     return scorm.interaction(5, answer, definition).then((result) => {
       return expect(result.data).toHaveLength(1);
@@ -246,41 +247,39 @@ describe("scorm temporal model", () => {
     const answer: string = "apple[.]fruit[,]carrot[.]vegetable";
     const definition: InteractionActivityDefinition = {
       description: {
-        "en-US": "Match the food items to their groups."
+        "en-US": "Match the food items to their groups.",
       },
       type: "http://adlnet.gov/expapi/activities/cmi.interaction",
       interactionType: "matching",
-      correctResponsesPattern: [
-        "apple[.]fruit[,]carrot[.]vegetable"
-      ],
+      correctResponsesPattern: ["apple[.]fruit[,]carrot[.]vegetable"],
       source: [
         {
           id: "apple",
           description: {
-            "en-US": "Apple"
-          }
+            "en-US": "Apple",
+          },
         },
         {
           id: "carrot",
           description: {
-            "en-US": "Carrot"
-          }
-        }
+            "en-US": "Carrot",
+          },
+        },
       ],
       target: [
         {
           id: "fruit",
           description: {
-            "en-US": "Fruit"
-          }
+            "en-US": "Fruit",
+          },
         },
         {
           id: "vegetable",
           description: {
-            "en-US": "Vegetable"
-          }
-        }
-      ]
+            "en-US": "Vegetable",
+          },
+        },
+      ],
     };
     return scorm.interaction(6, answer, definition).then((result) => {
       return expect(result.data).toHaveLength(1);
@@ -291,27 +290,25 @@ describe("scorm temporal model", () => {
     const answer: string = "score[.]1[,]score2[.]5";
     const definition: InteractionActivityDefinition = {
       description: {
-        "en-US": "A set of scores"
+        "en-US": "A set of scores",
       },
       type: "http://adlnet.gov/expapi/activities/cmi.interaction",
       interactionType: "performance",
-      correctResponsesPattern: [
-        "score[.]1:[,]score2[.]5:6"
-      ],
+      correctResponsesPattern: ["score[.]1:[,]score2[.]5:6"],
       steps: [
         {
           id: "score",
           description: {
-            "en-US": "Scores for part 1"
-          }
+            "en-US": "Scores for part 1",
+          },
         },
         {
           id: "score2",
           description: {
-            "en-US": "Scores for part 2"
-          }
-        }
-      ]
+            "en-US": "Scores for part 2",
+          },
+        },
+      ],
     };
     return scorm.interaction(7, answer, definition).then((result) => {
       return expect(result.data).toHaveLength(1);
@@ -322,39 +319,37 @@ describe("scorm temporal model", () => {
     const answer: string = "one[,]two[,]three[,]four";
     const definition: InteractionActivityDefinition = {
       description: {
-        "en-US": "Put the numbers in order:"
+        "en-US": "Put the numbers in order:",
       },
       type: "http://adlnet.gov/expapi/activities/cmi.interaction",
       interactionType: "sequencing",
-      correctResponsesPattern: [
-        "one[,]two[,]three[,]four"
-      ],
+      correctResponsesPattern: ["one[,]two[,]three[,]four"],
       choices: [
         {
           id: "four",
           description: {
-            "en-US": "Four"
-          }
+            "en-US": "Four",
+          },
         },
         {
           id: "two",
           description: {
-            "en-US": "Two"
-          }
+            "en-US": "Two",
+          },
         },
         {
           id: "one",
           description: {
-            "en-US": "One"
-          }
+            "en-US": "One",
+          },
         },
         {
           id: "three",
           description: {
-            "en-US": "Three"
-          }
-        }
-      ]
+            "en-US": "Three",
+          },
+        },
+      ],
     };
     return scorm.interaction(8, answer, definition).then((result) => {
       return expect(result.data).toHaveLength(1);
@@ -365,13 +360,11 @@ describe("scorm temporal model", () => {
     const answer: string = "2";
     const definition: InteractionActivityDefinition = {
       description: {
-        "en-US": "How many legs does a human have?"
+        "en-US": "How many legs does a human have?",
       },
       type: "http://adlnet.gov/expapi/activities/cmi.interaction",
       interactionType: "numeric",
-      correctResponsesPattern: [
-        "2"
-      ]
+      correctResponsesPattern: ["2"],
     };
     return scorm.interaction(9, answer, definition).then((result) => {
       return expect(result.data).toHaveLength(1);
@@ -382,13 +375,11 @@ describe("scorm temporal model", () => {
     const answer: string = "(35.937432,-86.868896)";
     const definition: InteractionActivityDefinition = {
       description: {
-        "en-US": "On this map, please mark Franklin, TN"
+        "en-US": "On this map, please mark Franklin, TN",
       },
       type: "http://adlnet.gov/expapi/activities/cmi.interaction",
       interactionType: "other",
-      correctResponsesPattern: [
-        "(35.937432,-86.868896)"
-      ]
+      correctResponsesPattern: ["(35.937432,-86.868896)"],
     };
     return scorm.interaction(10, answer, definition).then((result) => {
       return expect(result.data).toHaveLength(1);
@@ -398,21 +389,23 @@ describe("scorm temporal model", () => {
   test("can report objective", () => {
     const definition: ObjectiveActivityDefinition = {
       name: {
-        "en-US": "Test Objective"
+        "en-US": "Test Objective",
       },
       description: {
-        "en-US": "An objective used for testing purposes"
+        "en-US": "An objective used for testing purposes",
       },
-      type: "http://adlnet.gov/expapi/activities/objective"
+      type: "http://adlnet.gov/expapi/activities/objective",
     };
-    return scorm.objective("test", XAPI.Verbs.COMPLETED, definition).then((result) => {
-      return expect(result.data).toHaveLength(1);
-    });
+    return scorm
+      .objective("test", XAPI.Verbs.COMPLETED, definition)
+      .then((result) => {
+        return expect(result.data).toHaveLength(1);
+      });
   });
 
   test("can score", () => {
     const score: ResultScore = {
-      scaled: 1
+      scaled: 1,
     };
     return scorm.score(score).then((result) => {
       return expect(result.data).toHaveLength(1);
@@ -435,26 +428,28 @@ describe("scorm temporal model", () => {
 describe("attempt state", () => {
   test("can update the current attempt state", () => {
     /* eslint-disable */
-    return scorm.setCurrentAttemptState({
-      adl_data: [],
-      comments_from_lms: {
-        comment: "",
+    return scorm
+      .setCurrentAttemptState({
+        adl_data: [],
+        comments_from_lms: {
+          comment: "",
+          location: "",
+          timestamp: "",
+        },
+        credit: "no-credit",
         location: "",
-        timestamp: ""
-      },
-      credit: "no-credit",
-      location: "",
-      mode: "browse",
-      preferences: {
-        audio_captioning: 0,
-        audio_level: 1,
-        delivery_speed: 1,
-        language: ""
-      },
-      total_time: ""
-    }).then((result) => {
-      return expect(result.data).toBeDefined();
-    });
+        mode: "browse",
+        preferences: {
+          audio_captioning: 0,
+          audio_level: 1,
+          delivery_speed: 1,
+          language: "",
+        },
+        total_time: "",
+      })
+      .then((result) => {
+        return expect(result.data).toBeDefined();
+      });
     /* eslint-enable */
   });
 
@@ -463,5 +458,4 @@ describe("attempt state", () => {
       expect(result.data).toBeDefined();
     });
   });
-
 });
